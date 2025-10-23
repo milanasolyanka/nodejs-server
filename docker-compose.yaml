@@ -1,7 +1,29 @@
 services:
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.14.3
+    container_name: logstash
+    volumes:
+      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./logs:/usr/share/logstash/logs
+    ports:
+      - "5000:5000"
+    environment:
+      - LS_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.monitoring.enabled=false
+    networks:
+      - mynetwork
+    healthcheck:
+      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/5000"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 15s
   profiles:
     build:
       context: ./profiles
+    depends_on:
+      logstash:
+        condition: service_healthy
     ports:
       - "3001:3001"
     networks:
@@ -10,6 +32,9 @@ services:
   about:
     build:
       context: ./about
+    depends_on:
+      logstash:
+        condition: service_healthy
     ports:
       - "3002:3002"
     networks:
@@ -30,4 +55,4 @@ services:
 
 networks:
   mynetwork:
-    external: true
+    driver: bridge

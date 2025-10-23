@@ -1,0 +1,8 @@
+Server started on http://localhost:3001
+Server started on http://localhost:3002
+Server started on http://localhost:3002
+Server started on http://localhost:3001
+Received a get request for /
+Received a get request for profile ID: 45
+Received a get request for profile ID: 45
+Received a get request for profile ID: 115
