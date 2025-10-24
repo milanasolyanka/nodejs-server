@@ -1,2 +1,4 @@
 **/node_modules
 **/buffer.txt
+logs
+logstash
