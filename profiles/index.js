@@ -1,6 +1,33 @@
 const express = require("express");
 const app = express();
+app.use(express.json());
 const port = 3001;
+
+const jwt = require("jsonwebtoken");
+
+require("dotenv").config();
+const JWT_SECRET = process.env.JWT_SECRET;
+
+const { users } = require("./mockUsers");
+
+app.post("/auth/login", async (req, res) => {
+  const { username, password } = req.body;
+
+  const user = users.find((u) => u.username === username);
+  if (!user) {
+    return res.json({ message: "I know no such user :(" });
+  }
+
+  if (!password === user.password) {
+    return res.json({ message: "Your password is wrong :(" });
+  }
+
+  const token = jwt.sign({ id: user.id, username: user.username }, JWT_SECRET, {
+    expiresIn: "1h",
+  });
+
+  res.json({ token });
+});
 
 app.get("/", (req, res) => {
   console.log("Received a get request");
