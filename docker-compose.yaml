@@ -1,58 +1,30 @@
+version: '3.8'
+
 services:
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.14.3
-    container_name: logstash
-    volumes:
-      - ./logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-      - ./logs:/usr/share/logstash/logs
-    ports:
-      - "5000:5000"
+  mysql:
+    image: mysql:5.7
+    restart: always
     environment:
-      - LS_JAVA_OPTS=-Xms256m -Xmx256m
-      - xpack.monitoring.enabled=false
-    networks:
-      - mynetwork
-    healthcheck:
-      test: ["CMD", "bash", "-c", "echo > /dev/tcp/127.0.0.1/5000"]
-      interval: 5s
-      timeout: 3s
-      retries: 10
-      start_period: 15s
-  profiles:
-    build:
-      context: ./profiles
-    depends_on:
-      logstash:
-        condition: service_healthy
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: lab_db
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
     ports:
-      - "3001:3001"
-    networks:
-      - mynetwork
-
-  about:
-    build:
-      context: ./about
-    depends_on:
-      logstash:
-        condition: service_healthy
-    ports:
-      - "3002:3002"
-    networks:
-      - mynetwork
-
-  nginx:
-    image: nginx:latest
-    depends_on:
-      - profiles
-      - about
-    container_name: server_nginx
-    ports:
-      - "80:80"
+      - "3306:3306"
     volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf:ro
-    networks:
-      - mynetwork
+      - mysql_data:/var/lib/mysql
 
-networks:
-  mynetwork:
-    driver: bridge
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mysql
+    environment:
+      DB_HOST: mysql
+      DB_USER: user
+      DB_PASSWORD: password
+      DB_NAME: lab_db
+
+volumes:
+  mysql_data:

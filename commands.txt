@@ -1,0 +1,11 @@
+// сохраняет резервную копию
+docker exec nodejs-server-mysql-1 mysqldump --no-tablespaces -uuser -ppassword lab_db | Out-File -Encoding ASCII dump/dump.sql
+
+// удаляем бд
+docker exec -i (docker ps -qf "name=mysql") mysql -uuser -ppassword -e "DROP DATABASE IF EXISTS lab_db;"
+
+// создаем новую бд
+docker exec -i (docker ps -qf "name=mysql") mysql -uuser -ppassword -e "CREATE DATABASE lab_db;"
+
+// восстанавливает бд из дампа
+Get-Content .\dump\dump.sql | docker exec -i (docker ps -qf "name=mysql") mysql -uuser -ppassword lab_db
