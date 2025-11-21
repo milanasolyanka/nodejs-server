@@ -2,19 +2,19 @@ version: "3.9"
 
 services:
   profiles:
-    image: docker-registry.ru:5000/profiles:latest  # образ из реестра
+    image: milanasolyanka/lab5-profiles
     ports:
       - "3001:3001"
     networks:
       - mynetwork
     deploy:
-      replicas: 1  # можно больше, если нужно масштабирование
+      replicas: 1 # можно больше, если нужно масштабирование
       placement:
         constraints:
           - node.hostname == nodejs-server-profiles
 
   about:
-    image: docker-registry.ru:5000/about:latest  # образ из реестра
+    image: milanasolyanka/lab5-about
     ports:
       - "3002:3002"
     networks:
