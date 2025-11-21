@@ -2,7 +2,7 @@ version: "3.9"
 
 services:
   profiles:
-    build: ./profiles
+    image: profiles:latest
     ports:
       - "3001:3001"
     networks:
@@ -13,7 +13,7 @@ services:
           - node.hostname == nodejs-server-profiles
 
   about:
-    build: ./about
+    image: about:latest
     ports:
       - "3002:3002"
     networks:
