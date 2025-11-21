@@ -2,23 +2,25 @@ version: "3.9"
 
 services:
   profiles:
-    image: profiles:latest
+    image: docker-registry.ru:5000/profiles:latest  # образ из реестра
     ports:
       - "3001:3001"
     networks:
       - mynetwork
     deploy:
+      replicas: 1  # можно больше, если нужно масштабирование
       placement:
         constraints:
           - node.hostname == nodejs-server-profiles
 
   about:
-    image: about:latest
+    image: docker-registry.ru:5000/about:latest  # образ из реестра
     ports:
       - "3002:3002"
     networks:
       - mynetwork
     deploy:
+      replicas: 1
       placement:
         constraints:
           - node.hostname == nodejs-server-about
@@ -27,11 +29,13 @@ services:
     image: nginx:latest
     ports:
       - "80:80"
-    volumes:
-      - ./nginx.conf:/etc/nginx/nginx.conf
     networks:
       - mynetwork
+    configs:
+      - source: nginx_config
+        target: /etc/nginx/nginx.conf
     deploy:
+      replicas: 1
       placement:
         constraints:
           - node.hostname == nodejs-server-manager
@@ -39,3 +43,7 @@ services:
 networks:
   mynetwork:
     external: true
+
+configs:
+  nginx_config:
+    file: ./nginx.conf
