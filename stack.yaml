@@ -10,7 +10,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == UbuntuProfiles
+          - node.hostname == nodejs-server-profiles
 
   about:
     build: ./about
@@ -21,7 +21,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == UbuntuAbout
+          - node.hostname == nodejs-server-about
 
   nginx:
     image: nginx:latest
@@ -34,7 +34,7 @@ services:
     deploy:
       placement:
         constraints:
-          - node.hostname == UbuntuManager
+          - node.hostname == nodejs-server-manager
 
 networks:
   mynetwork:
